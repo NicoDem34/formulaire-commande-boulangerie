@@ -5,7 +5,7 @@ let orderItems = [];
 // Traductions
 const translations = {
     fr: {
-        title: "Formulaire de commande bilingue pour la boulangerie de Goult",
+        title: "Commande pour la boulangerie de Goult",
         "delivery-info": "Livraison chaque matin vers 8h (boulangerie fermée le lundi, sauf exception)",
         "order-info": "Commande à passer avant 15h la veille par WhatsApp",
         "name-label": "Nom / Name :",
