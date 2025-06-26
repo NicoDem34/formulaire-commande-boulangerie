@@ -1176,4 +1176,29 @@ body {
 .loading {
   opacity: 0.5;
   pointer-events: none;
+}/* Correction accordéon mobile */
+.accordion-header {
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+/* Forcer les événements tactiles */
+.accordion-button {
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+    touch-action: manipulation;
+}
+
+/* Correction pour iOS Safari */
+.accordion-item {
+    position: relative;
+    z-index: 1;
+}
+
+.accordion-collapse {
+    overflow: hidden;
 }
