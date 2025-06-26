@@ -20,7 +20,7 @@ const translations = {
         weekdays: ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     },
     en: {
-        title: "Bilingual order form for Goult bakery",
+        title: "Order form for Goult bakery",
         "delivery-info": "Delivery every morning around 8 a.m. (bakery closed on Monday, except exception)",
         "order-info": "Order to be placed before 3 p.m. the day before via WhatsApp",
         "name-label": "Name / Nom :",
