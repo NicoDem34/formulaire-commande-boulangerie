@@ -2,8 +2,125 @@
 let currentLang = 'fr';
 let orderItems = [];
 
-// Traductions
-const translations = {
+// Traductions (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/app.js b/app.js
+index 47d7850db5e86106e9fa0e37ec086d09aa0deabe..bfe5193695115b02f413058b099ca82be6cc8e4a 100644
+--- a/app.js
++++ b/app.js
+@@ -164,27 +164,109 @@ function updateOrderItem(productId, quantity) {
+ }
+ function getOrderItemQuantity(productId) {
+     const item = orderItems.find(item => item.productId === productId);
+     return item ? item.quantity : '';
+ }
+ function isProductAvailable(product) {
+     if (!product.days_available) return true;
+     const deliveryDate = document.getElementById('deliveryDate').value;
+     const dateObj = deliveryDate ? new Date(deliveryDate) : new Date();
+     const day = dateObj.getDay();
+     return product.days_available.includes(day);
+ }
+ function getAvailabilityInfo(product) {
+     if (!product.days_available) return '';
+     const days = product.days_available.map(day =>
+         translations[currentLang].weekdays[day]
+     ).join(', ');
+     return `<span class="availability-info" title="${days}">*</span>`;
+ }
+ function updateAvailability() {
+     generateCategories();
+ }
+ 
+ // --- Partie récapitulatif/modal/WhatsApp (identique à avant, à compléter si besoin) ---
+ 
+-// ... showSummary, closeModal, openWhatsApp, formatDate ...
++function findProduct(productId) {
++    for (const category of DATA.categories) {
++        const product = category.products.find(p => p.id === productId);
++        if (product) return product;
++    }
++    return null;
++}
++
++function showSummary() {
++    const customerName = document.getElementById('customerName').value.trim();
++    const deliveryDate = document.getElementById('deliveryDate').value;
++
++    if (!customerName || !deliveryDate) {
++        alert(currentLang === 'fr'
++            ? 'Veuillez remplir votre nom et la date de livraison.'
++            : 'Please fill in your name and delivery date.');
++        return;
++    }
++
++    if (orderItems.length === 0) {
++        alert(currentLang === 'fr'
++            ? 'Veuillez sélectionner au moins un produit.'
++            : 'Please select at least one product.');
++        return;
++    }
++
++    const summaryContent = document.getElementById('summaryContent');
++    const summaryTotal = document.getElementById('summaryTotal');
++
++    let content = `<p><strong>${currentLang === 'fr' ? 'Nom' : 'Name'}:</strong> ${customerName}</p>`;
++    content += `<p><strong>${currentLang === 'fr' ? 'Date' : 'Date'}:</strong> ${formatDate(deliveryDate)}</p>`;
++    content += '<hr>';
++    content += `<h3>${currentLang === 'fr' ? 'Produits commandés' : 'Ordered products'}:</h3>`;
++    content += '<ul>';
++
++    let total = 0;
++    orderItems.forEach(item => {
++        const product = findProduct(item.productId);
++        if (product) {
++            const subtotal = item.quantity * product.price;
++            content += `<li>${item.quantity}x ${currentLang === 'fr' ? product.name_fr : product.name_en} - ${subtotal.toFixed(2)}€</li>`;
++            total += subtotal;
++        }
++    });
++
++    content += '</ul>';
++    summaryContent.innerHTML = content;
++    summaryTotal.innerHTML = `<h3><strong>Total: ${total.toFixed(2)}€</strong></h3>`;
++
++    document.getElementById('summaryModal').style.display = 'block';
++}
++
++function closeModal() {
++    document.getElementById('summaryModal').style.display = 'none';
++}
++
++function openWhatsApp() {
++    const customerName = document.getElementById('customerName').value.trim();
++    const deliveryDate = document.getElementById('deliveryDate').value;
++
++    let message = `Bonjour, je souhaite commander / Hello, I would like to order:%0A%0A`;
++    message += `Nom/Name: ${customerName}%0A`;
++    message += `Date: ${formatDate(deliveryDate)}%0A%0A`;
++
++    let total = 0;
++    orderItems.forEach(item => {
++        const product = findProduct(item.productId);
++        if (product) {
++            const subtotal = item.quantity * product.price;
++            message += `- ${item.quantity}x ${product.name_fr} / ${product.name_en} - ${subtotal.toFixed(2)}€%0A`;
++            total += subtotal;
++        }
++    });
++
++    message += `%0ATotal: ${total.toFixed(2)}€`;
++    const whatsappUrl = `https://wa.me/?text=${message}`;
++    window.open(whatsappUrl, '_blank');
++}
++
++function formatDate(dateString) {
++    const date = new Date(dateString);
++    return date.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : 'en-US');
++}
+ 
+ 
+EOF
+)const translations = {
     fr: {
         title: "Commande pour la boulangerie de Goult",
         "delivery-info": "Livraison chaque matin vers 8h (boulangerie fermée le lundi, sauf juillet et août)",
