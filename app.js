@@ -191,7 +191,6 @@ function updateAvailability() {
     generateCategories();
 }
 
-// --- Partie récapitulatif/modal/WhatsApp (identique à avant, à compléter si besoin) ---
 
 function findProduct(productId) {
     for (const category of DATA.categories) {
@@ -276,4 +275,10 @@ function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : 'en-US');
 }
+
+// Exposer les fonctions pour d'autres scripts si besoin
+window.showSummary = showSummary;
+window.closeModal = closeModal;
+window.openWhatsApp = openWhatsApp;
+window.formatDate = formatDate;
 
