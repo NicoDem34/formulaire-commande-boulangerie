@@ -303,5 +303,87 @@ function updateAvailability() {
 
 // --- Partie récapitulatif/modal/WhatsApp (identique à avant, à compléter si besoin) ---
 
-// ... showSummary, closeModal, openWhatsApp, formatDate ...
+function findProduct(productId) {
+    for (const category of DATA.categories) {
+        const product = category.products.find(p => p.id === productId);
+        if (product) return product;
+    }
+    return null;
+}
+
+function showSummary() {
+    const customerName = document.getElementById('customerName').value.trim();
+    const deliveryDate = document.getElementById('deliveryDate').value;
+
+    if (!customerName || !deliveryDate) {
+        alert(currentLang === 'fr'
+            ? 'Veuillez remplir votre nom et la date de livraison.'
+            : 'Please fill in your name and delivery date.');
+        return;
+    }
+
+    if (orderItems.length === 0) {
+        alert(currentLang === 'fr'
+            ? 'Veuillez sélectionner au moins un produit.'
+            : 'Please select at least one product.');
+        return;
+    }
+
+    const summaryContent = document.getElementById('summaryContent');
+    const summaryTotal = document.getElementById('summaryTotal');
+
+    let content = `<p><strong>${currentLang === 'fr' ? 'Nom' : 'Name'}:</strong> ${customerName}</p>`;
+    content += `<p><strong>${currentLang === 'fr' ? 'Date' : 'Date'}:</strong> ${formatDate(deliveryDate)}</p>`;
+    content += '<hr>';
+    content += `<h3>${currentLang === 'fr' ? 'Produits commandés' : 'Ordered products'}:</h3>`;
+    content += '<ul>';
+
+    let total = 0;
+    orderItems.forEach(item => {
+        const product = findProduct(item.productId);
+        if (product) {
+            const subtotal = item.quantity * product.price;
+            content += `<li>${item.quantity}x ${currentLang === 'fr' ? product.name_fr : product.name_en} - ${subtotal.toFixed(2)}€</li>`;
+            total += subtotal;
+        }
+    });
+
+    content += '</ul>';
+    summaryContent.innerHTML = content;
+    summaryTotal.innerHTML = `<h3><strong>Total: ${total.toFixed(2)}€</strong></h3>`;
+
+    document.getElementById('summaryModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('summaryModal').style.display = 'none';
+}
+
+function openWhatsApp() {
+    const customerName = document.getElementById('customerName').value.trim();
+    const deliveryDate = document.getElementById('deliveryDate').value;
+
+    let message = `Bonjour, je souhaite commander / Hello, I would like to order:%0A%0A`;
+    message += `Nom/Name: ${customerName}%0A`;
+    message += `Date: ${formatDate(deliveryDate)}%0A%0A`;
+
+    let total = 0;
+    orderItems.forEach(item => {
+        const product = findProduct(item.productId);
+        if (product) {
+            const subtotal = item.quantity * product.price;
+            message += `- ${item.quantity}x ${product.name_fr} / ${product.name_en} - ${subtotal.toFixed(2)}€%0A`;
+            total += subtotal;
+        }
+    });
+
+    message += `%0ATotal: ${total.toFixed(2)}€`;
+    const whatsappUrl = `https://wa.me/?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : 'en-US');
+}
 
