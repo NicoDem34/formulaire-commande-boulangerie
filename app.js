@@ -136,14 +136,13 @@ function switchLanguage(lang) {
     }
 }
 function updateLanguage() {
-    document.getElementById('page-title').textContent = translations[currentLang].title;
-    document.getElementById('deliveryInfo').textContent = translations[currentLang]["delivery-info"];
-    document.getElementById('orderInfo').textContent = translations[currentLang]["order-info"];
-    document.getElementById('nameLabel').textContent = translations[currentLang]["name-label"];
-    document.getElementById('dateLabel').textContent = translations[currentLang]["date-label"];
-    document.getElementById('showSummary').textContent = translations[currentLang]["show-summary"];
-    document.getElementById('summaryTitle').textContent = translations[currentLang]["summary-title"];
-    document.getElementById('whatsappBtn').textContent = translations[currentLang]["whatsapp-btn"];
+    document.querySelectorAll('[data-lang]').forEach(el => {
+        const key = el.getAttribute('data-lang');
+        const translation = translations[currentLang][key];
+        if (translation) {
+            el.textContent = translation;
+        }
+    });
     // Mise à jour des jours
     updateDayLabels();
 }
