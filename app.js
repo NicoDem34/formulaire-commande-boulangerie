@@ -283,17 +283,24 @@ function getOrderItemQuantity(productId) {
     return item ? item.quantity : '';
 }
 function isProductAvailable(product) {
-    if (!product.days_available) return true;
+    if (!product.availability) return true;
+    if (product.availability.includes('tous les jours') || product.availability.includes('daily')) {
+        return true;
+    }
     const deliveryDate = document.getElementById('deliveryDate').value;
     const dateObj = deliveryDate ? new Date(deliveryDate) : new Date();
-    const day = dateObj.getDay();
-    return product.days_available.includes(day);
+    const dayNameFr = translations['fr'].weekdays[dateObj.getDay()];
+    return product.availability.includes(dayNameFr);
 }
+
 function getAvailabilityInfo(product) {
-    if (!product.days_available) return '';
-    const days = product.days_available.map(day =>
-        translations[currentLang].weekdays[day]
-    ).join(', ');
+    if (!product.availability) return '';
+    if (product.availability.includes('tous les jours') || product.availability.includes('daily')) {
+        return '';
+    }
+    const days = (currentLang === 'fr'
+        ? product.availability
+        : (product.availability_en || product.availability)).join(', ');
     return `<span class="availability-info" title="${days}">*</span>`;
 }
 function updateAvailability() {
